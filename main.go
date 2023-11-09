@@ -1,40 +1,26 @@
 package main
 
 import (
-	"encoding/json"
+	"api-go/configs"
+	"api-go/handlers"
 	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
+	"github.com/go-chi/chi/v5"
 )
 
-type Client struct {
-	Id        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	LastName  string    `json:"lastName"`
-	Birthdate time.Time `json:"birthdate"`
-	Email     string    `json:"email"`
-}
-
-func (client Client) GetFullInfoClient() string {
-	return fmt.Sprintf("Id: %s, Name: %s, LastName: %s, Birthdate: %s, Email: %s",
-		client.Id.String(), client.Name, client.LastName, client.Birthdate, client.Email)
-}
-
 func main() {
-	http.HandleFunc("/", home)
-	http.ListenAndServe(":8080", nil)
-}
-
-func home(w http.ResponseWriter, r *http.Request) {
-	client := Client{
-		Id:        uuid.New(),
-		Name:      "João",
-		LastName:  "Pereira",
-		Birthdate: time.Date(1999, time.October, 7, 0, 0, 0, 0, time.UTC),
-		Email:     "joaopereira@email.com",
+	err := configs.Load()
+	if err != nil {
+		panic(err)
 	}
 
-	json.NewEncoder(w).Encode(client)
+	r := chi.NewRouter()
+	r.Post("/", handlers.Create)
+	r.Put("/{id}", handlers.Update)
+	r.Delete("/{id}", handlers.Delete)
+	r.Get("/{id}", handlers.Get)
+	r.Get("/", handlers.List)
+
+	http.ListenAndServe(fmt.Sprintf(":%s", configs.GetServerPort()), r)
 }
