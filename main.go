@@ -2,6 +2,7 @@ package main
 
 import (
 	"api-go/configs"
+	"api-go/context"
 	"api-go/handlers"
 	"fmt"
 	"net/http"
@@ -14,6 +15,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	context.InitContext()
 
 	r := chi.NewRouter()
 	r.Post("/", handlers.Create)
