@@ -1,0 +1,8 @@
+[api]
+port = "8080"
+
+[database]
+host = "localhost"
+user = "user_go"
+pass = "1234"
+name = "api_go"
